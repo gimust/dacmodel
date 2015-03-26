@@ -18,7 +18,7 @@ const int F=1;
 std::string mash3::getState()
 {
   std::stringstream ss;
-  ss << q[0] << " " << q[1] << " " << q[2] << " " << c[0] << " " << c[1] << " " << c[2] << " " << mash;     
+  ss << q[0] << " " << q[1] << " " << q[2] << " " << c[0][0] << " " << c[1][0] << " " << c[2][0] << " " << mash;     
 
   std::string s = ss.str();
   return s;
@@ -48,14 +48,17 @@ void  mash3::init()
   q[0]=1;
   q[1]=0;
   q[2]=0;
-        
-  // Fill flip-flops
-  for (int i=0; i<4; i++) Clock();
+  
+  for(int i=0; i<3; i++) {
 
+    for(int j=0; j<3; j++)
+      c[i][j] = 0;
+  }
+  
   fprintf(stderr, "mash3 initialised with modulo %d, %d, %d\n", modulo1, modulo2, modulo3);
 }
 
-int mash3::Clock()
+int mash3::Clock(int n)
 {
   int d[4]; // Adder output / register data input
 
@@ -64,23 +67,22 @@ int mash3::Clock()
   c[1][1] = c[1][0];
 
   // Adders
-  d[0] = (q[0]+   F) % modulo1;
+  d[0] = (q[0]+   n) % modulo1;
   d[1] = (q[1]+d[0]) % modulo2;
   d[2] = (q[2]+d[1]) % modulo3;
 
   // Carries
-  c[0][0] = (q[0]+   F) / modulo1;
+  c[0][0] = (q[0]+   n) / modulo1;
   c[1][0] = (q[1]+d[0]) / modulo2;
   c[2][0] = (q[2]+d[1]) / modulo3;
 
   // Register
-  for (int i=0; i<4; i++) q[i] = d[i];
+  for (int i=0; i<3; i++) q[i] = d[i];
 
   // Pascals triangle for output value
   mash =  c[0][0]
       +   c[1][0] -   c[1][1]
-      +   c[2][0] - 2*c[2][1] +   c[2][2]
-      ;
+      +   c[2][0] - 2*c[2][1] +   c[2][2];
 
   return mash;
 }

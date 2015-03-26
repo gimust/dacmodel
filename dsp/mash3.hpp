@@ -9,7 +9,7 @@ class mash3
 public:
     mash3();
     mash3(uint32_t mod1, uint32_t mod2, uint32_t mod3);
-    int Clock();
+    int Clock(int n = 1);
     std::string getState();
 
 private:
